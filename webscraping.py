@@ -7,13 +7,13 @@ import threading
 import logging
 import json
 
-# Loglama yapılandırması
+
 logging.basicConfig(filename='web_scraper.log', level=logging.INFO)
 
 def log_message(message):
     logging.info(message)
 
-# Veri çekme fonksiyonu
+
 def fetch_data():
     url = url_entry.get()
     if not url:
@@ -21,7 +21,7 @@ def fetch_data():
         return
 
     try:
-        # User-Agent ile istek
+        
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Accept-Language": "tr-TR,tr;q=0.9",
@@ -29,7 +29,7 @@ def fetch_data():
             "Connection": "keep-alive",
         }
 
-        # Proxy kullanmadan doğrudan istek
+
         response = requests.get(url, headers=headers, timeout=10)  # Timeout süresini 10 saniye olarak ayarladık
         response.raise_for_status()
     except requests.exceptions.Timeout:
@@ -50,14 +50,14 @@ def fetch_data():
 
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    # Başlık ve meta açıklama
+
     title = soup.title.string if soup.title else "No title"
     meta_desc = soup.find("meta", attrs={"name": "description"})
     meta_desc = meta_desc["content"] if meta_desc else "No description"
 
-    results = soup.find_all('p')  # Örnek: Tüm paragrafları çekme
+    results = soup.find_all('p')  
 
-    # Çekilen veriyi saklama
+    
     global fetched_data
     fetched_data = []
     
@@ -74,11 +74,10 @@ def fetch_data():
     log_message(f"Fetched data from {url}")
     display_table(fetched_data)
 
-# Çok iş parçacıklı veri çekme
 def fetch_data_threaded():
     threading.Thread(target=fetch_data).start()
 
-# Veriyi tablo olarak göster
+
 def display_table(data):
     df = pd.DataFrame(data)
     tree = ttk.Treeview(frame, columns=list(df.columns), show='headings')
@@ -92,7 +91,7 @@ def display_table(data):
 
     tree.grid(row=6, column=0, columnspan=3, sticky=(tk.W, tk.E, tk.N, tk.S))
 
-# CSV kaydetme
+# CSV kaydetm
 def save_to_csv():
     if not fetched_data:
         messagebox.showerror("Error", "No data to save.")
@@ -122,12 +121,11 @@ def save_to_json():
         json.dump(fetched_data, f, indent=4)
     messagebox.showinfo("Success", f"Data saved as {filename}.json")
 
-# Otomatik veri çekme
+
 def auto_fetch(interval=3600):
     fetch_data_threaded()
     threading.Timer(interval, auto_fetch).start()
 
-# Giriş kontrolü
 def login():
     username = username_entry.get()
     password = password_entry.get()
@@ -136,7 +134,7 @@ def login():
     else:
         messagebox.showerror("Error", "Invalid username or password")
 
-# Arama fonksiyonu
+
 def search_in_results():
     keyword = search_entry.get()
     if not keyword:
@@ -149,7 +147,7 @@ def search_in_results():
     for result in filtered_results:
         output_text.insert(tk.END, result + '\n')
 
-# GUI ayarları
+#arayüz
 app = tk.Tk()
 app.title("Web Scraper")
 
